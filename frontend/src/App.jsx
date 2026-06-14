@@ -4,7 +4,9 @@ import ControlRoom from './components/ControlRoom';
 import LogSidebar from './components/LogSidebar';
 import { WifiOff, Radio } from 'lucide-react';
 
-const SOCKET_URL = 'http://localhost:3001';
+const SOCKET_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+  ? 'http://localhost:3001' 
+  : window.location.origin;
 
 export default function App() {
   const [socket, setSocket] = useState(null);

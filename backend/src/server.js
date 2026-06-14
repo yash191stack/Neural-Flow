@@ -2,6 +2,9 @@ import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
 import { InfrastructureAgent } from './agent.js';
 
 const PORT = process.env.PORT || 3001;
@@ -99,6 +102,19 @@ const shutdown = () => {
 
 process.on('SIGTERM', shutdown);
 process.on('SIGINT', shutdown);
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const DIST_PATH = path.join(__dirname, '../../frontend/dist');
+
+// Serve static assets from frontend build if it exists
+if (fs.existsSync(DIST_PATH)) {
+  console.log(`📁 Serving static assets from: ${DIST_PATH}`);
+  app.use(express.static(DIST_PATH));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(DIST_PATH, 'index.html'));
+  });
+}
 
 httpServer.listen(PORT, () => {
   console.log(`🚀 NeuralFlow Orchestrator Server running on http://localhost:${PORT}`);

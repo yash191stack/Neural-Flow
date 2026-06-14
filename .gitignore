@@ -1,0 +1,19 @@
+# Dependency directories
+node_modules/
+
+# Build outputs
+dist/
+build/
+
+# Local logs
+backend/logs/reroute_events.json
+
+# IDE and OS files
+.DS_Store
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

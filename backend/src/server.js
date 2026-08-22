@@ -7,7 +7,8 @@
 
 import express from 'express';
 import { WebSocketServer, WebSocket } from 'ws';
-import http from 'http';
+import http  from 'http';
+import https from 'https';
 import cors from 'cors';
 import fs from 'fs';
 import net from 'net';
@@ -333,7 +334,9 @@ function makeRouterHandler() {
 
     const headers = { ...req.headers, host: `${targetHost}:${targetPort}` };
 
-    const proxyReq = http.request({
+    // Select http or https based on the target node's configured protocol
+    const proxyAgent = (targetNode.protocol === 'https:') ? https : http;
+    const proxyReq = proxyAgent.request({
       hostname: targetHost,
       port: targetPort,
       path: req.url,
@@ -941,7 +944,10 @@ app.post('/api/environment', (req, res) => {
 app.get('/api/external/health', async (req, res) => {
   const results = await Promise.all(externalNodes.map(n =>
     new Promise(resolve => {
-      http.get(`http://localhost:${n.port}/api/health`, { timeout: 2000 }, r => {
+      // Use the node's actual configured base URL so remote HTTPS nodes are reached correctly
+      const targetUrl = new URL('/api/health', n.url);
+      const agent = targetUrl.protocol === 'https:' ? https : http;
+      agent.get(targetUrl.toString(), { timeout: 2000 }, r => {
         let d = '';
         r.on('data', c => { d += c; });
         r.on('end', () => {

@@ -7,7 +7,8 @@
 //   - startAttack() calls /api/demo/stress on the real instance (controlled, local only)
 //   - endAttack()   calls /api/demo/stress {active:false} to remove stress
 
-import http from 'http';
+import http  from 'http';
+import https from 'https';
 
 // Controlled stress parameters for the demo — bounded, safe values
 const DEMO_STRESS = {
@@ -63,7 +64,9 @@ class ExternalNodeAdapter {
 
   // ── Telemetry polling ──────────────────────────────────────────────────────
   _poll() {
-    const req = http.get(
+    // Select http or https based on the configured node URL protocol
+    const agent = this.protocol === 'https:' ? https : http;
+    const req = agent.get(
       { hostname: this.hostname, port: this.port, path: '/api/metrics', timeout: 2000 },
       (res) => {
         let raw = '';
@@ -155,7 +158,7 @@ class ExternalNodeAdapter {
     this.predictedBreach = null;
   }
 
-  // ── Controlled stress: calls /api/demo/stress on THIS local instance only ──
+  // ── Controlled stress: calls /api/demo/stress on THIS remote instance ──
   _callDemoStress(active, resetMetrics = false) {
     const body = JSON.stringify({
       active,
@@ -164,7 +167,9 @@ class ExternalNodeAdapter {
       resetMetrics, // BB clears its sliding window when an attack is explicitly ended
     });
 
-    const req = http.request(
+    // Select http or https based on the configured node URL protocol
+    const agent = this.protocol === 'https:' ? https : http;
+    const req = agent.request(
       {
         hostname: this.hostname, port: this.port, path: '/api/demo/stress',
         method: 'POST',

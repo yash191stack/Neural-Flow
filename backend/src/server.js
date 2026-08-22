@@ -1170,6 +1170,17 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+const DIST_PATH = path.join(PROJECT_ROOT, 'frontend/dist');
+
+// Serve static assets from frontend build if it exists
+if (fs.existsSync(DIST_PATH)) {
+  console.log(`📁 Serving static assets from: ${DIST_PATH}`);
+  app.use(express.static(DIST_PATH));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(DIST_PATH, 'index.html'));
+  });
+}
+
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
   console.log(`🚀 NeuralFlow Backend Server running on http://localhost:${PORT}`);

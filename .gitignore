@@ -7,6 +7,17 @@ build/
 
 # Local logs
 backend/logs/reroute_events.json
+*.log
+backend.log
+
+# PID files
+*.pid
+backend.pid
+
+# Environments and Secrets
+.env
+.env.*
+*.env
 
 # IDE and OS files
 .DS_Store

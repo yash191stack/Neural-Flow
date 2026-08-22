@@ -28,3 +28,13 @@ backend.pid
 *.njsproj
 *.sln
 *.sw?
+
+# Temporary documentation files (Local only)
+DEMO_CHECKLIST.md
+PRESENTATION.md
+QUICK_START.md
+REBUILD_SUMMARY.md
+project_documentation/
+✅_PROJECT_COMPLETE.txt
+*.txt
+
